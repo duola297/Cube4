@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+
+<struts>
+	<package name="cubeCarPack" extends="crudPkg" namespace="/cube/car">
+	    
+	    <!-- 查询自定义字段 -->
+	    <action name="getCarColumn" class="cubeCarAction" method="getCarColumn">
+	        <result type="json">
+	            <param name="root">resultMap</param>
+	        </result>
+	    </action>
+	    
+	    <!-- 查询车辆列表记录 -->
+	    <action name="getCubeCarList" class="cubeCarAction" method="getCubeCarList">
+			<result type="json">
+				<param name="root">queryListMap</param>
+			</result>
+		</action>
+	    
+	    <!-- 查询车辆列表所有记录 -->
+	    <action name="getCubeCarListFull" class="cubeCarAction" method="getCubeCarListFull">
+			<result type="json">
+				<param name="root">queryListMap</param>
+			</result>
+		</action>
+		
+	    <!-- 删除车辆记录 -->
+	    <action name="deleteCar" class="cubeCarAction" method="deleteCar">
+			<result type="json">
+				<param name="root">result</param>
+			</result>
+		</action>
+	    
+	    <!-- 导出车辆记录-->
+		<action name="exportCars" class="cubeCarAction" method="exportCars">
+			<result name="success" type="stream">
+				<param name="contentType">application/octet-stream</param>
+				<param name="inputName">excelStream</param>
+				<param name="contentDisposition">${contentDisposition}</param>
+			</result>
+			<result name="error" type="json"><param name="root">dataMap</param></result>
+		</action>
+		
+		<!-- 根据ID查询车辆信息 -->
+	    <action name="getCarById" class="cubeCarAction" method="getCarById">
+			<result type="json">
+				<param name="root">result</param>
+			</result>
+		</action>
+		
+	    <!-- 根据ID查询保险订单信息（编辑） -->
+	    <action name="getCarByIdRom" class="cubeCarAction" method="getCarByIdRom">
+			<result type="json">
+				<param name="root">result</param>
+			</result>
+		</action>
+		
+	    <!-- 保存车辆信息详情 -->
+	    <action name="saveCar" class="cubeCarAction" method="saveCar">
+			<result type="json">
+				<param name="root">result</param>
+			</result>
+		</action>
+		
+		<!-- Excel上传导入相关 -->
+		<action name="uploadExcel" class="importCarAction" method="uploadExcel">
+			<result type="json" name="success">
+				<param name="root">resultMap</param>
+			</result>
+		</action>
+		
+		<!-- 确定导入Excel -->
+		<action name="importFromList" class="importCarAction" method="importFromList">
+			<result type="json">
+				<param name="root">result</param>
+			</result>
+		</action>
+	    
+	</package>
+	
+</struts>

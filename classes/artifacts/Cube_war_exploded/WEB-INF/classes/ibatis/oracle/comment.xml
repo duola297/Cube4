@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap      
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"      
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="comment">
+	<select id="getComment" resultClass="HashMap">
+	    <![CDATA[select 
+	    				c.COMMENT_ID, 
+	    				c.CONTENT, 
+	    				TO_CHAR(c.CREATE_TIME, 'yyyy-mm-dd hh24:mi:ss') as "CREATE_TIME", 
+	    				c.APP_MODULE_ID, 
+	    				c.APP_RECORD_ID, 
+	    				c.IS_NOTIFY, 
+	    				c.ORGANIZER_ID,
+	    				c.TENANTS_ID,
+	    				c.MESSAGE_ID,
+	    				u.USER_ID, 
+	    				u.USER_NAME 
+	    		 from 
+	    		 	SYS_COMMENT c inner join USER_INFO u
+	    		 	on c.USER_ID=u.USER_ID
+	    		 	where 1=1
+	     ]]>
+	     
+	     <isNotEmpty property="criteria.appModuleId" prepend="AND">
+	         c.APP_MODULE_ID = #criteria.appModuleId#
+	     </isNotEmpty>
+	     <isNotEmpty property="criteria.appRecordId" prepend="AND">
+	         c.APP_RECORD_ID = #criteria.appRecordId#
+	     </isNotEmpty>
+	     <isNotEmpty property="criteria.messageId" prepend="AND">
+	         c.MESSAGE_ID = #criteria.messageId#
+	     </isNotEmpty>
+	     <isNotEmpty property="criteria.organizerId" prepend="AND">
+	         c.ORGANIZER_ID = #criteria.organizerId#
+	     </isNotEmpty>
+	     <isNotEmpty property="criteria.tenantsId" prepend="AND">
+	         c.TENANTS_ID = #criteria.tenantsId#
+	     </isNotEmpty>
+	     
+	     <![CDATA[order by CREATE_TIME]]>
+	</select>
+	
+	<select id="getUserByOrganizerId" resultClass="HashMap">
+	    SELECT 
+			USER_ID, 
+	    	USER_NAME, 
+	    	USER_CODE 
+	    FROM USER_INFO
+	    WHERE IS_VALID='Y'
+			AND IS_ADMIN='N' 
+	    <isNotEmpty property="criteria.organizerId" prepend="AND">
+	        ORGANIZER_ID = #criteria.organizerId#
+	    </isNotEmpty>
+	    <isNotEmpty property="criteria.userId" prepend="AND">
+	        USER_ID &lt;&gt; #criteria.userId#
+	    </isNotEmpty>
+	    ORDER BY USER_NAME 
+	</select>
+	
+	<select id="getCommentList" resultClass="HashMap">
+	    SELECT 
+	    	C.COMMENT_ID, 
+			C.CONTENT, 
+	    	TO_CHAR(C.CREATE_TIME, 'yyyy-mm-dd hh24:mi:ss') AS CREATE_TIME, 
+	    	C.APP_RECORD_ID,
+	    	U.USER_ID, 
+	    	U.USER_NAME 
+	    FROM (
+	    	SELECT 
+	    		COMMENT_ID,
+	    		CONTENT,
+	    		CREATE_TIME,
+	    		USER_ID,
+	    		APP_RECORD_ID 
+	    	FROM SYS_COMMENT
+	    	WHERE ORGANIZER_ID = #criteria.organizerId#
+	    	AND TENANTS_ID = #criteria.tenantsId#
+	    	AND APP_MODULE_ID = #criteria.appModuleId# 
+	    	AND $criteria.recordIdList$
+	    ) C 
+	    INNER JOIN (
+	    	SELECT 
+	    		USER_ID,
+	    		USER_NAME
+	    	FROM USER_INFO 
+	    	WHERE ORGANIZER_ID = #criteria.organizerId#
+	    	AND TENANTS_ID = #criteria.tenantsId#
+	    ) U ON C.USER_ID=U.USER_ID
+	    WHERE 1=1
+	    ORDER BY CREATE_TIME DESC
+	</select>
+
+</sqlMap>

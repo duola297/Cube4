@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+        "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+        "http://struts.apache.org/dtds/struts-2.0.dtd">
+<struts>
+	<package name="commonactionPkg" extends="crudPkg" namespace="/cube/commonaction">
+		
+		<!-- 获取外呼结果集合 -->
+		<action name="getDialOutResult" class="cn.com.sandi.cube.commonAction.web.CommonAction" method="getDialOutResult">
+			<result type="json">
+				<param name="root">resultList</param>
+			</result>
+		</action>
+		
+		
+		<action name="validateOldPassword" class="cn.com.sandi.cube.commonAction.web.CommonAction" method="validateOldPassword">
+			<result type="json">
+				<param name="root">result</param>
+			</result>
+		</action>
+		
+		<!-- 获全网所有用户 -->
+		<action name="getAllUser" class="cn.com.sandi.cube.commonAction.web.CommonAction" method="getAllUser">
+			<result type="json">
+				<param name="root">resultJsonarray</param>
+			</result>
+		</action>
+		
+		<!-- 获取当前组织所有用户 -->
+		<action name="getPresentUsers" class="cn.com.sandi.cube.commonAction.web.CommonAction" method="getPresentUsers">
+			<result type="json">
+				<param name="root">resultJsonarray</param>
+			</result>
+		</action>
+		
+		<!-- 获取指定租户的第一二层 -->
+		<action name="getTenantsAllUserTree" class="cn.com.sandi.cube.commonAction.web.CommonAction" method="getTenantsAllUserTree">
+			<result type="json">
+				<param name="root">resultJsonarray</param>
+			</result>
+		</action>
+		
+		<!-- 获取指定组织用户树 -->
+		<action name="getOrganizerTree" class="cn.com.sandi.cube.commonAction.web.CommonAction" method="getOrganizerTree">
+			<result type="json">
+				<param name="root">resultJsonarray</param>
+			</result>
+		</action>
+		
+		<!-- 根据str查找用户和相关组织架构 -->
+		<action name="getUserByStr" class="cn.com.sandi.cube.commonAction.web.CommonAction" method="getUserByStr">
+			<result type="json">
+				<param name="root">resultList</param>
+			</result>
+		</action>
+		
+		<!-- 获取指定租户的所有组织 -->
+		<action name="getTenantsAllOrgTree" class="cn.com.sandi.cube.commonAction.web.CommonAction" method="getTenantsAllOrgTree">
+			<result type="json">
+				<param name="root">resultJsonarray</param>
+			</result>
+		</action>
+		
+		<!-- 根据str查找组织架构 -->
+		<action name="getOrgByStr" class="cn.com.sandi.cube.commonAction.web.CommonAction" method="getOrgByStr">
+			<result type="json">
+				<param name="root">resultList</param>
+			</result>
+		</action>
+		
+		<!-- 获取全网组织 -->
+		<action name="getAllOrganizerInfo" class="cn.com.sandi.cube.commonAction.web.CommonAction" method="getAllOrganizerInfo">
+			<result type="json">
+				<param name="root">resultList</param>
+			</result>
+		</action>
+		
+		<!-- 获取组织配置 -->
+		<action name="getCubeOrganizerConfigList" class="cn.com.sandi.cube.commonAction.web.CommonAction" method="getCubeOrganizerConfigList">
+			<result type="json">
+				<param name="root">resultList</param>
+			</result>
+		</action>
+		
+		<!-- 获取省市区数据 -->
+		<action name="getCitySelect" class="cn.com.sandi.cube.commonAction.web.CommonAction" method="getCitySelect">
+			<result type="json">
+				<param name="root">resultObj</param>
+			</result>
+		</action>
+		
+		<!-- 获取4s店信息 -->
+		<action name="getDealerList" class="cn.com.sandi.cube.commonAction.web.CommonAction" method="getDealerList">
+			<result type="json">
+				<param name="root">resultList</param>
+			</result>
+		</action>
+		
+		<action name="getAllRelationOrganizer" class="cn.com.sandi.cube.commonAction.web.CommonAction" method="getAllRelationOrganizer">
+			<result type="json">
+				<param name="root">resultList</param>
+			</result>
+		</action>
+		
+		<!-- 获取品牌信息，用于品牌经销商联动下拉框 -->
+		<action name="getShowBrandList" class="cn.com.sandi.cube.commonAction.web.CommonAction" method="getShowBrandList">
+			<result type="json">
+				<param name="root">resultBrandList</param>
+			</result>
+		</action>
+		
+		<!-- 根据指定的relaitonType获取relationList -->
+		<action name="getRelationByType" class="cn.com.sandi.cube.commonAction.web.CommonAction" method="getRelationByType">
+			<result type="json">
+				<param name="root">resultList</param>
+			</result>
+		</action>
+		
+		<action name="getShowBrandListByOrgId" class="cn.com.sandi.cube.commonAction.web.CommonAction" method="getShowBrandListByOrgId">
+			<result type="json">
+				<param name="root">queryListMap</param>
+			</result>
+		</action>
+		
+		<!-- 根据指定的经销店名称获取relationList -->
+		<action name="getRelationList" class="cn.com.sandi.cube.commonAction.web.CommonAction" method="getRelationList">
+			<result type="json">
+				<param name="root">queryListMap</param>
+			</result>
+		</action>
+		
+		<!-- 保存经销商信息 -->
+		<action name="saveRelationOrganizer" class="cn.com.sandi.cube.commonAction.web.CommonAction" method="saveRelationOrganizer">
+			<result type="json">
+				<param name="root">returnMap</param>
+			</result>
+		</action>
+		
+		<!-- 上传经销商图片 -->
+		<action name="uploadDealerImage" class="cn.com.sandi.cube.commonAction.web.CommonAction" method="uploadDealerImage">
+			<result type="json">
+				<param name="root">result</param>
+			</result>
+		</action>
+		
+		<!-- 获取经销商设置需要的数据 -->
+		<action name="getDealerSettingData" class="cn.com.sandi.cube.commonAction.web.CommonAction" method="getDealerSettingData">
+			<result type="json">
+				<param name="root">returnMap</param>
+			</result>
+		</action>
+		
+		<!-- 判断当前登录账户是否是宾利店的账户 -->
+		<action name="checkIsBentleyDealer" class="cn.com.sandi.cube.commonAction.web.CommonAction" method="checkIsBentleyDealer">
+			<result type="json">
+				<param name="root">returnMap</param>
+			</result>
+		</action>
+		
+		<!-- 获取招揽执行机构 -->
+		<action name="getExecuteOrganizer" class="cn.com.sandi.cube.commonAction.web.CommonAction" method="getExecuteOrganizer">
+			<result type="json">
+				<param name="root">returnMap</param>
+			</result>
+		</action>
+		
+		<action name="getFullRelationList" class="cn.com.sandi.cube.commonAction.web.CommonAction" method="getFullRelationList">
+			<result type="json">
+				<param name="root">resultList</param>
+			</result>
+		</action>
+	</package>
+</struts>

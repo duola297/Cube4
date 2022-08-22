@@ -1,0 +1,240 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap      
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"      
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="cubeinform">
+	
+	<!-- 查询30天后即将失效的积分 -->
+	<select id="getExpireIntegralList" resultClass="HashMap">
+		SELECT 
+			SUM(POINT) AS POINT,
+			date_format(EFFECTIVE_DATE, '%Y-%m-%d') AS EFFECTIVE_DATE,
+			MEMBER_ID
+		FROM CUBE_INTEGRAL 
+		WHERE EFFECTIVE_DATE BETWEEN #criteria.startTime# and #criteria.endTime#
+		<isNotEmpty property="criteria.memberId" prepend="AND">
+			MEMBER_ID = #criteria.memberId# 
+		</isNotEmpty>
+		GROUP BY date_format(EFFECTIVE_DATE, '%Y-%m-%d'), MEMBER_ID
+	</select>
+	
+	<!-- 查询30天后即将到期的会员 -->
+	<select id="getDemotionMemberList" resultClass="HashMap">
+		SELECT 
+			CM.MEMBER_ID,
+			date_format(CM.EFFECT_DATE, '%Y-%m-%d') AS EFFECT_DATE,
+			MEMBER_LEVEL
+		FROM CUBE_MEMBER CM
+		WHERE EFFECT_DATE BETWEEN #criteria.startTime# and #criteria.endTime#
+		<isNotEmpty property="criteria.memberId" prepend="AND">
+			CM.MEMBER_ID = #criteria.memberId# 
+		</isNotEmpty>
+	</select>
+	
+	<!-- 查询等级map -->
+	<select id="getMemberLevelMap" resultClass="HashMap">
+		SELECT 
+			CAST(MEMBER_LEVEL AS CHAR) AS MEMBER_LEVEL,
+			LEVEL_NAME
+		FROM CUBE_MEMBER_LEVEL
+	</select>
+	
+	<!-- 根据会员ID查询客户的openid -->
+	<select id="getMemberInfoByMemberId" resultClass="HashMap">
+		SELECT 
+			CC.OPENID,
+			CC.UNIONID,
+			CC.CONTACTID,
+			CC.LASTNAME,
+			CM.MEMBER_NO,
+			CC.MOBILEPHONE,
+			CM.MEMBER_ID
+		FROM CUBE_MEMBER CM
+		INNER JOIN CUBE_CUSTOMER CC ON CM.CONTACTID = CC.CONTACTID
+		WHERE CM.MEMBER_ID = #criteria.memberId#
+	</select>
+	
+	<!-- 根据会员ID查询客户的openid -->
+	<select id="getMemberInfoByContactid" resultClass="HashMap">
+		SELECT 
+			CC.OPENID,
+			CC.UNIONID,
+			CC.CONTACTID,
+			CC.LASTNAME,
+			CM.MEMBER_NO,
+			CC.MOBILEPHONE,
+			CM.MEMBER_ID
+		FROM CUBE_MEMBER CM
+		INNER JOIN CUBE_CUSTOMER CC ON CM.ORIGINAL_CONTACTID = CC.CONTACTID
+		WHERE CC.CONTACTID = #criteria.contactid#
+	</select>
+	
+	<!-- 查询30天后即将失效的卡券 -->
+	<select id="getExpireCouponList" resultClass="HashMap">
+		SELECT 
+			CCS.MEMBER_ID,
+			date_format(CCS.EFFECTIVE_END_DATE, '%Y-%m-%d') AS EFFECTIVE_END_DATE,
+			MAX(CCT.COUPON_SHOW_NAME) AS COUPON_SHOW_NAME,
+			COUNT(DISTINCT CCT.TEMPLATE_ID) AS TYPE_CNT,
+			COUNT(1) AS CNT
+		FROM CUBE_COUPON_SUB CCS
+		INNER JOIN CUBE_COUPON CC ON CC.COUPON_ID = CCS.COUPON_ID
+		INNER JOIN CUBE_COUPON_TEMPLATE CCT ON CC.TEMPLATE_ID = CCT.TEMPLATE_ID 
+		WHERE CCS.EFFECTIVE_END_DATE BETWEEN #criteria.startTime# and #criteria.endTime#
+		AND CCS.STATE=1
+		<isNotEmpty property="criteria.memberId" prepend="AND">
+			CCS.MEMBER_ID = #criteria.memberId# 
+		</isNotEmpty>
+		GROUP BY CCS.MEMBER_ID, date_format(CCS.EFFECTIVE_END_DATE, '%Y-%m-%d')
+	</select>
+	
+	<select id="getInformLogList" resultClass="HashMap">
+		SELECT 
+			date_format(CIL.CREATE_DATE, '%Y-%m-%d %H:%i:%s') AS CREATE_DATE,
+			CM.MEMBER_NO,
+			CC.LASTNAME,
+			CC.MOBILEPHONE,
+			CML.LEVEL_NAME,
+			CC.OLD_MEMBER_NO,
+			CII.NOTE,
+			CII.TEMPLATE_TITLE,
+			CIL.CONTENT,
+			CCS.LASTNAME AS INFORM_LASTNAME,
+			CASE WHEN CIL.CONTACTID = CM.ORIGINAL_CONTACTID THEN '归属会员' ELSE '管理会员' END AS LOTTOMAN,
+			CCS.OLD_MEMBER_NO AS INFORM_OLD_MEMBER_NO,
+			OI.ORGANIZER_NAME,
+			CIL.CREATE_NAME,
+			CASE WHEN CIL.STATE=1 THEN '发送成功' WHEN  CIL.STATE=0 THEN '发送失败' ELSE '发送中' END AS STATE,
+			CASE WHEN CIL.STATE=0 THEN '系统出错' END AS FAIL_REASON 
+		FROM CUBE_INFORM_LOG CIL 
+		INNER JOIN CUBE_INFORM_ITEM CII ON CIL.ITEM_ID = CII.ITEM_ID 
+		INNER JOIN CUBE_MEMBER CM ON CIL.MEMBER_ID = CM.MEMBER_ID
+		INNER JOIN CUBE_CUSTOMER CC ON CM.ORIGINAL_CONTACTID = CC.CONTACTID 
+		INNER JOIN CUBE_CUSTOMER CCS ON CCS.CONTACTID = CIL.CONTACTID 
+		INNER JOIN CUBE_MEMBER_LEVEL CML ON CML.MEMBER_LEVEL = CM.MEMBER_LEVEL
+		INNER JOIN ORGANIZER_INFO OI ON CIL.ORGANIZER_ID = OI.ORGANIZER_ID 
+		INNER JOIN ORGANIZER_EXT OE ON OI.ORGANIZER_ID = OE.ORGANIZER_CHILDID
+		WHERE OE.ORGANIZER_ID = #criteria.organizerId#
+		<isNotEmpty property="criteria.startTime" prepend="">
+			<isNotEmpty property="criteria.endTime" prepend="AND">
+    			CIL.CREATE_DATE BETWEEN #criteria.startTime# AND #criteria.endTime# 
+			</isNotEmpty>
+		</isNotEmpty>
+		<isNotEmpty property="criteria.lastname" prepend="AND">
+    		CC.LASTNAME CONCAT(#criteria.lastname#, '%') 
+		</isNotEmpty>
+		<isNotEmpty property="criteria.mobilephone" prepend="AND">
+    		CC.MOBILEPHONE CONCAT(#criteria.mobilephone#, '%') 
+		</isNotEmpty>
+		<isNotEmpty property="criteria.memberNo" prepend="AND">
+    		CM.MEMBER_NO CONCAT(#criteria.memberNo#, '%') 
+		</isNotEmpty>
+		<isNotEmpty property="criteria.itemId" prepend="AND">
+    		CIL.ITEM_ID = #criteria.itemId# 
+		</isNotEmpty>
+		<isNotEmpty property="criteria.state" prepend="AND">
+    		CIL.STATE = #criteria.state#
+		</isNotEmpty>
+		<isNotEmpty property="criteria.typeId" prepend="AND">
+    		CII.TYPE_ID = #criteria.typeId#
+		</isNotEmpty>
+		<isNotEmpty property="criteria.way" prepend="AND">
+    		CII.WAY = #criteria.way#
+		</isNotEmpty>
+		<isNotEmpty property="criteria.sort" prepend="ORDER BY">
+    		IF(ISNULL($criteria.sort$),1,0), $criteria.sort$ $criteria.order$ 
+		</isNotEmpty>
+		<isEmpty property="criteria.sort" prepend="">
+			ORDER BY CIL.CREATE_DATE DESC 
+		</isEmpty>
+		LIMIT #criteria.index#, #criteria.rows#
+	</select>
+	
+	<select id="getInformLogListCount" resultClass="java.lang.Integer">
+		SELECT COUNT(*)
+		FROM CUBE_INFORM_LOG CIL 
+		INNER JOIN CUBE_INFORM_ITEM CII ON CIL.ITEM_ID = CII.ITEM_ID 
+		INNER JOIN CUBE_MEMBER CM ON CIL.MEMBER_ID = CM.MEMBER_ID
+		INNER JOIN CUBE_CUSTOMER CC ON CM.ORIGINAL_CONTACTID = CC.CONTACTID 
+		INNER JOIN CUBE_CUSTOMER CCS ON CCS.CONTACTID = CIL.CONTACTID 
+		INNER JOIN CUBE_MEMBER_LEVEL CML ON CML.MEMBER_LEVEL = CM.MEMBER_LEVEL
+		INNER JOIN ORGANIZER_INFO OI ON CIL.ORGANIZER_ID = OI.ORGANIZER_ID
+		INNER JOIN ORGANIZER_EXT OE ON OI.ORGANIZER_ID = OE.ORGANIZER_CHILDID
+		WHERE OE.ORGANIZER_ID = #criteria.organizerId#
+		<isNotEmpty property="criteria.startTime" prepend="">
+			<isNotEmpty property="criteria.endTime" prepend="AND">
+    			CIL.CREATE_DATE BETWEEN #criteria.startTime# AND #criteria.endTime# 
+			</isNotEmpty>
+		</isNotEmpty>
+		<isNotEmpty property="criteria.lastname" prepend="AND">
+    		CC.LASTNAME CONCAT(#criteria.lastname#, '%') 
+		</isNotEmpty>
+		<isNotEmpty property="criteria.mobilephone" prepend="AND">
+    		CC.MOBILEPHONE CONCAT(#criteria.mobilephone#, '%') 
+		</isNotEmpty>
+		<isNotEmpty property="criteria.memberNo" prepend="AND">
+    		CM.MEMBER_NO CONCAT(#criteria.memberNo#, '%') 
+		</isNotEmpty>
+		<isNotEmpty property="criteria.itemId" prepend="AND">
+    		CIL.ITEM_ID = #criteria.itemId# 
+		</isNotEmpty>
+		<isNotEmpty property="criteria.state" prepend="AND">
+    		CIL.STATE = #criteria.state#
+		</isNotEmpty>
+		<isNotEmpty property="criteria.typeId" prepend="AND">
+    		CII.TYPE_ID = #criteria.typeId#
+		</isNotEmpty>
+		<isNotEmpty property="criteria.way" prepend="AND">
+    		CII.WAY = #criteria.way#
+		</isNotEmpty>
+	</select>
+	
+	<select id="getInfromItem" resultClass="HashMap">
+		SELECT ITEM_ID, TYPE_ID, NOTE FROM CUBE_INFORM_ITEM CII
+		WHERE 1=1 
+		<isNotEmpty property="criteria.typeId" prepend="AND">
+    		CII.TYPE_ID = #criteria.typeId#
+		</isNotEmpty>
+	</select>
+	
+	<select id="getInfromType" resultClass="HashMap">
+		SELECT TYPE_ID, TYPE_NAME FROM CUBE_INFORM_TYPE
+	</select>
+	
+	<select id="getSmsInfoMap" resultClass="HashMap">
+		SELECT CONTENT, DESCRIPTION FROM SMSINFO
+		WHERE ITEM='SMSFlag'
+	</select>
+	
+	<select id="getInfromLogMap" resultClass="HashMap">
+		SELECT
+			SMS_ID,
+			GROUP_CONCAT(LOG_ID, '/', MOBILEPHONE) AS DATA,
+			MAX(ORGANIZER_ID) AS ORGANIZER_ID
+		FROM CUBE_INFORM_LOG
+		WHERE WAY=1 AND STATE=-1 
+		AND SMS_ID IS NOT NULL AND SMS_ID != ''
+		AND CREATE_DATE BETWEEN #criteria.startTime# AND #criteria.endTime# 
+		AND MOBILEPHONE IS NOT NULL AND MOBILEPHONE != ''
+		GROUP BY SMS_ID
+	</select>
+	
+	<select id="getInformList" resultClass="cn.com.sandi.cube.cubeinform.model.CubeInform">
+		SELECT 
+			AUTO_ID AS autoId,
+			ITEM_ID AS itemId,
+			MEMBER_ID AS memberId,
+			CONTACTID AS contactid,
+			CONTENT_DATA AS contentData,
+			TENANTS_ID AS tenantsId,
+			ORGANIZER_ID AS organizerId,
+			CREATE_ID AS createId,
+			CREATE_NAME AS createName,
+			CREATE_DATE AS createDate
+		FROM CUBE_INFORM 
+		ORDER BY CREATE_DATE
+		LIMIT #criteria.index#, #criteria.rows#
+	</select>
+	
+</sqlMap>

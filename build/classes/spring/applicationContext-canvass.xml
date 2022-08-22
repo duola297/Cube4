@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+
+    <!-- 招揽 DAO -->
+	<bean id="cubeCanvassDAO" class="cn.com.sandi.cube.common.GenericEntityDaoImpl">
+	    <constructor-arg value="cn.com.sandi.cube.cubecanvass.model.CubeCanvass" />
+	</bean>
+	
+	<!-- 招揽扩展 DAO -->
+	<bean id="cubeCanvassExtDAO" class="cn.com.sandi.common.generic.GenericDaoImpl">
+	    <constructor-arg value="cn.com.sandi.cube.cubecanvass.model.CubeCanvassExt"/>
+	</bean>
+	
+	<!-- 招揽定时器 DAO -->
+	<bean id="cubeCanvassTimingDAO" class="cn.com.sandi.common.generic.GenericDaoImpl">
+	    <constructor-arg value="cn.com.sandi.cube.cubecanvass.model.CubeCanvassTiming"/>
+	</bean>
+    
+	<!-- 招揽 Service -->
+	<bean id="cubeCanvassService" class="cn.com.sandi.cube.cubecanvass.service.CubeCanvassServiceImpl">
+	    <constructor-arg ref="cubeCanvassDAO" />
+	</bean>
+	
+	<!-- 招揽扩展 Service -->
+	<bean id="cubeCanvassExtService" class="cn.com.sandi.cube.cubecanvass.service.CubeCanvassExtServiceImpl">
+	    <constructor-arg ref="cubeCanvassExtDAO"/>
+	</bean>
+	
+	<!-- 招揽定时器 Service -->
+	<bean id="cubeCanvassTimingService" class="cn.com.sandi.cube.cubecanvass.service.CubeCanvassTimingServiceImpl">
+	    <constructor-arg ref="cubeCanvassTimingDAO"/>
+	</bean>
+	
+</beans>

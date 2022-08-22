@@ -1,0 +1,430 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap      
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"      
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="cubeCar">
+	
+    <!-- 查询车辆列表 -->
+    <select id="getCubeCarList" resultClass="HashMap">
+        SELECT * FROM(
+            SELECT 
+                A.*,
+                ROW_NUMBER() OVER(
+                <isNotEmpty property="criteria.sort" prepend="ORDER BY">
+                	$criteria.sort$ $criteria.order$ 
+                </isNotEmpty>
+                <isEmpty property="criteria.sort" prepend="">
+                	ORDER BY CREATE_DATE DESC 
+                </isEmpty>
+                
+                ) ROWNUMBER 
+            FROM (
+                SELECT 
+                	CAR.CAR_ID,
+                    CAR.CONTACTID,
+                    CAR.CAR_NUMBER,
+                    CAR.CAR_FRAME_NUMBER,
+                    CAR.CAR_ENGINE_NUMBER,
+                    CAR.CAR_BRAND,
+                    CAR.CAR_BRAND_SERIES,
+                    CAR.CAR_BRAND_TYPE,
+                    CAR.SHOP_NAME,
+                    CONVERT(VARCHAR,CAR.CREATE_DATE,20) CREATE_DATE,
+                    CAR.CREATE_NAME AS CREATE_ID,
+                    CAR.CREATE_NAME,
+                    CONVERT(VARCHAR,CAR.MODIFY_DATE,20) MODIFY_DATE,
+                    CAR.MODIFY_NAME AS MODIFY_ID,
+                    CAR.MODIFY_NAME,
+                    CAR.SALE_ADVISER,
+                    CONVERT(VARCHAR,CAR.BUY_CAR_TIME,20) BUY_CAR_TIME,
+                    CC.PERSON_NAME,
+                    CC.WX_NAME,
+                    CC.PREFIX_ID,
+                    CC.COMPANY,
+                    CC.SEX,
+                    CC.BIRTHDAY,
+                    CC.IDCARD,
+                    CC.NOTE,
+                    CC.ADDRESS,
+                    CC.POSTCODE,
+                    CC.COUNTRY,
+                    CC.DISTRICT,
+                    CC.REGION,
+                    CC.AREA,
+                    CC.BLOCK,
+                    CC.EMAIL,
+                    CC.QQ,
+                    CC.WX,
+                    CC.CTEL,
+                    CC.CTEL_2,
+                    CC.MTEL,
+                    CC.MTEL_2,
+                    CC.FTEL,
+                    CC.PERSON_TYPE,
+                    CC.PERSON_LEVEL,
+                    CC.PERSON_SOURCE,
+                    CC.KEYINFO,
+                    CC.IMPORT_NAME,
+                    CUBE_CUSTOMER_CUS_COL_1 ,
+                    CUBE_CUSTOMER_CUS_COL_2 ,
+                    CUBE_CUSTOMER_CUS_COL_3 ,
+                    CUBE_CUSTOMER_CUS_COL_4 ,
+                    CUBE_CUSTOMER_CUS_COL_5 ,
+                    CUBE_CUSTOMER_CUS_COL_6 ,
+                    CUBE_CUSTOMER_CUS_COL_7 ,
+                    CUBE_CUSTOMER_CUS_COL_8 ,
+                    CUBE_CUSTOMER_CUS_COL_9 ,
+                    CUBE_CUSTOMER_CUS_COL_10,
+                    CUBE_CUSTOMER_CUS_COL_11,   
+                    CUBE_CUSTOMER_CUS_COL_12,  
+                    CUBE_CUSTOMER_CUS_COL_13,  
+                    CUBE_CUSTOMER_CUS_COL_14,  
+                    CUBE_CUSTOMER_CUS_COL_15,  
+                    CUBE_CUSTOMER_CUS_COL_16,  
+                    CUBE_CUSTOMER_CUS_COL_17,  
+                    CUBE_CUSTOMER_CUS_COL_18,  
+                    CUBE_CUSTOMER_CUS_COL_19,  
+                    CUBE_CUSTOMER_CUS_COL_20, 
+                    EXT.CUS_COL_1,
+                    EXT.CUS_COL_2,
+                    EXT.CUS_COL_3,
+                    EXT.CUS_COL_4,
+                    EXT.CUS_COL_5,
+                    EXT.CUS_COL_6,
+                    EXT.CUS_COL_7,
+                    EXT.CUS_COL_8,
+                    EXT.CUS_COL_9,
+                    EXT.CUS_COL_10
+                FROM (
+                    select * from CUBE_INSURE_CAR where 1 = 1
+                    <isNotEmpty property="criteria.tenantsId" prepend="AND">
+                        TENANTS_ID = #criteria.tenantsId#
+                    </isNotEmpty>
+                    <isNotEmpty property="criteria.organizerId" prepend="AND">
+                        ORGANIZER_ID = #criteria.organizerId#
+                    </isNotEmpty>
+                    <isNotEmpty property="criteria.cubeInsureCarWhere" prepend="">
+                        $criteria.cubeInsureCarWhere$
+                    </isNotEmpty>
+                ) CAR
+                INNER JOIN (
+                    SELECT 
+                        TENANTS_ID,
+                        ORGANIZER_ID,
+                        CONTACTID,
+                        PERSON_NAME,
+                        WX_NAME,
+                        PREFIX_ID,
+                        COMPANY,
+                        SEX,
+                        CONVERT(VARCHAR,BIRTHDAY,20) AS BIRTHDAY,
+                        IDCARD,
+                        NOTE,
+                        ADDRESS,
+                        POSTCODE,
+                        COUNTRY,
+                        DISTRICT,
+                        REGION,
+                        AREA,
+                        BLOCK,
+                        EMAIL,
+                        QQ,
+                        WX,
+                        CTEL,
+                        CTEL_2,
+                        MTEL,
+                        MTEL_2,
+                        FTEL,
+                        PERSON_TYPE,
+                        PERSON_LEVEL,
+                        PERSON_SOURCE,
+                        KEYINFO,
+                        IMPORT_NAME,
+                        CUS_COL_1 AS CUBE_CUSTOMER_CUS_COL_1,   
+                        CUS_COL_2 AS CUBE_CUSTOMER_CUS_COL_2,  
+                        CUS_COL_3 AS CUBE_CUSTOMER_CUS_COL_3,  
+                        CUS_COL_4 AS CUBE_CUSTOMER_CUS_COL_4,  
+                        CUS_COL_5 AS CUBE_CUSTOMER_CUS_COL_5,  
+                        CUS_COL_6 AS CUBE_CUSTOMER_CUS_COL_6,  
+                        CUS_COL_7 AS CUBE_CUSTOMER_CUS_COL_7,  
+                        CUS_COL_8 AS CUBE_CUSTOMER_CUS_COL_8,  
+                        CUS_COL_9 AS CUBE_CUSTOMER_CUS_COL_9,  
+                        CUS_COL_10 AS CUBE_CUSTOMER_CUS_COL_10,
+                        CUS_COL_11 AS CUBE_CUSTOMER_CUS_COL_11,   
+                        CUS_COL_12 AS CUBE_CUSTOMER_CUS_COL_12,  
+                        CUS_COL_13 AS CUBE_CUSTOMER_CUS_COL_13,  
+                        CUS_COL_14 AS CUBE_CUSTOMER_CUS_COL_14,  
+                        CUS_COL_15 AS CUBE_CUSTOMER_CUS_COL_15,  
+                        CUS_COL_16 AS CUBE_CUSTOMER_CUS_COL_16,  
+                        CUS_COL_17 AS CUBE_CUSTOMER_CUS_COL_17,  
+                        CUS_COL_18 AS CUBE_CUSTOMER_CUS_COL_18,  
+                        CUS_COL_19 AS CUBE_CUSTOMER_CUS_COL_19,  
+                        CUS_COL_20 AS CUBE_CUSTOMER_CUS_COL_20 
+                    FROM VIEW_CUBE_CUSTOMER 
+                    WHERE 1=1 
+                    <isNotEmpty property="criteria.tenantsId" prepend="AND">
+                        TENANTS_ID = #criteria.tenantsId#
+                    </isNotEmpty>
+                    <isNotEmpty property="criteria.organizerId" prepend="AND">
+                        ORGANIZER_ID = #criteria.organizerId# 
+                    </isNotEmpty>
+                    <isNotEmpty property="criteria.cubeCustomerWhere" prepend="">
+                        $criteria.cubeCustomerWhere$
+                    </isNotEmpty>
+                ) CC ON CAR.TENANTS_ID=CC.TENANTS_ID AND CAR.ORGANIZER_ID=CC.ORGANIZER_ID AND CAR.CONTACTID=CC.CONTACTID
+                INNER JOIN (
+                    select * from CUBE_INSURE_CAR_EXT where 1 = 1
+	                <isNotEmpty property="criteria.tenantsId" prepend="AND">
+                        TENANTS_ID = #criteria.tenantsId#
+                    </isNotEmpty>
+                    <isNotEmpty property="criteria.organizerId" prepend="AND">
+                        ORGANIZER_ID = #criteria.organizerId#
+                    </isNotEmpty>
+                    <isNotEmpty property="criteria.cubeInsureCarExtWhere" prepend="">
+                        $criteria.cubeInsureCarExtWhere$
+                    </isNotEmpty>
+                ) EXT ON EXT.TENANTS_ID=CAR.TENANTS_ID AND EXT.ORGANIZER_ID=CAR.ORGANIZER_ID AND EXT.CAR_ID=CAR.CAR_ID
+                WHERE 1 = 1
+                <isNotEmpty property="criteria.cubeCustomerExtWhere" prepend="">
+                    $criteria.cubeCustomerExtWhere$
+                </isNotEmpty>
+                <isNotEmpty property="criteria.fuzzyKeySearch" prepend="AND">
+					$criteria.fuzzyKeySearch$
+				</isNotEmpty>
+            )A
+        )B 
+        <![CDATA[
+            WHERE ROWNUMBER > #criteria.index# AND ROWNUMBER <= #criteria.index#+#criteria.rows#
+        ]]>
+    </select>
+    
+    <!-- 查询车辆列表总数量 -->
+    <select id="getCubeCarListCount" resultClass="Integer">
+        SELECT COUNT(1) FROM(
+            SELECT 
+                A.*
+            FROM (
+                SELECT 
+                	CAR.CAR_ID,
+                    CAR.CONTACTID,
+                    CAR.CAR_NUMBER,
+                    CAR.CAR_FRAME_NUMBER,
+                    CAR.CAR_ENGINE_NUMBER,
+                    CAR.CAR_BRAND,
+                    CAR.CAR_BRAND_SERIES,
+                    CAR.CAR_BRAND_TYPE,
+                    CAR.SHOP_NAME,
+                    CONVERT(VARCHAR,CAR.CREATE_DATE,20) CREATE_DATE,
+                    CAR.CREATE_NAME AS CREATE_ID,
+                    CAR.CREATE_NAME,
+                    CONVERT(VARCHAR,CAR.MODIFY_DATE,20) MODIFY_DATE,
+                    CAR.MODIFY_NAME AS MODIFY_ID,
+                    CAR.MODIFY_NAME,
+                    CAR.SALE_ADVISER,
+                    CONVERT(VARCHAR,CAR.BUY_CAR_TIME,20) BUY_CAR_TIME,
+                    CC.PERSON_NAME,
+                    CC.WX_NAME,
+                    CC.PREFIX_ID,
+                    CC.COMPANY,
+                    CC.SEX,
+                    CC.BIRTHDAY,
+                    CC.IDCARD,
+                    CC.NOTE,
+                    CC.ADDRESS,
+                    CC.POSTCODE,
+                    CC.COUNTRY,
+                    CC.DISTRICT,
+                    CC.REGION,
+                    CC.AREA,
+                    CC.BLOCK,
+                    CC.EMAIL,
+                    CC.QQ,
+                    CC.WX,
+                    CC.CTEL,
+                    CC.CTEL_2,
+                    CC.MTEL,
+                    CC.MTEL_2,
+                    CC.FTEL,
+                    CC.PERSON_TYPE,
+                    CC.PERSON_LEVEL,
+                    CC.PERSON_SOURCE,
+                    CC.KEYINFO,
+                    CC.IMPORT_NAME,
+                    CUBE_CUSTOMER_CUS_COL_1 ,
+                    CUBE_CUSTOMER_CUS_COL_2 ,
+                    CUBE_CUSTOMER_CUS_COL_3 ,
+                    CUBE_CUSTOMER_CUS_COL_4 ,
+                    CUBE_CUSTOMER_CUS_COL_5 ,
+                    CUBE_CUSTOMER_CUS_COL_6 ,
+                    CUBE_CUSTOMER_CUS_COL_7 ,
+                    CUBE_CUSTOMER_CUS_COL_8 ,
+                    CUBE_CUSTOMER_CUS_COL_9 ,
+                    CUBE_CUSTOMER_CUS_COL_10,
+                    CUBE_CUSTOMER_CUS_COL_11,   
+                    CUBE_CUSTOMER_CUS_COL_12,  
+                    CUBE_CUSTOMER_CUS_COL_13,  
+                    CUBE_CUSTOMER_CUS_COL_14,  
+                    CUBE_CUSTOMER_CUS_COL_15,  
+                    CUBE_CUSTOMER_CUS_COL_16,  
+                    CUBE_CUSTOMER_CUS_COL_17,  
+                    CUBE_CUSTOMER_CUS_COL_18,  
+                    CUBE_CUSTOMER_CUS_COL_19,  
+                    CUBE_CUSTOMER_CUS_COL_20, 
+                    EXT.CUS_COL_1,
+                    EXT.CUS_COL_2,
+                    EXT.CUS_COL_3,
+                    EXT.CUS_COL_4,
+                    EXT.CUS_COL_5,
+                    EXT.CUS_COL_6,
+                    EXT.CUS_COL_7,
+                    EXT.CUS_COL_8,
+                    EXT.CUS_COL_9,
+                    EXT.CUS_COL_10
+                FROM (
+                    select * from CUBE_INSURE_CAR where 1 = 1
+                    <isNotEmpty property="criteria.tenantsId" prepend="AND">
+                        TENANTS_ID = #criteria.tenantsId#
+                    </isNotEmpty>
+                    <isNotEmpty property="criteria.organizerId" prepend="AND">
+                        ORGANIZER_ID = #criteria.organizerId#
+                    </isNotEmpty>
+                    <isNotEmpty property="criteria.cubeInsureCarWhere" prepend="">
+                        $criteria.cubeInsureCarWhere$
+                    </isNotEmpty>
+                ) CAR
+                INNER JOIN (
+                    SELECT 
+                        TENANTS_ID,
+                        ORGANIZER_ID,
+                        CONTACTID,
+                        PERSON_NAME,
+                        WX_NAME,
+                        PREFIX_ID,
+                        COMPANY,
+                        SEX,
+                        CONVERT(VARCHAR,BIRTHDAY,20) AS BIRTHDAY,
+                        IDCARD,
+                        NOTE,
+                        ADDRESS,
+                        POSTCODE,
+                        COUNTRY,
+                        DISTRICT,
+                        REGION,
+                        AREA,
+                        BLOCK,
+                        EMAIL,
+                        QQ,
+                        WX,
+                        CTEL,
+                        CTEL_2,
+                        MTEL,
+                        MTEL_2,
+                        FTEL,
+                        PERSON_TYPE,
+                        PERSON_LEVEL,
+                        PERSON_SOURCE,
+                        KEYINFO,
+                        IMPORT_NAME,
+                        CUS_COL_1 AS CUBE_CUSTOMER_CUS_COL_1,   
+                        CUS_COL_2 AS CUBE_CUSTOMER_CUS_COL_2,  
+                        CUS_COL_3 AS CUBE_CUSTOMER_CUS_COL_3,  
+                        CUS_COL_4 AS CUBE_CUSTOMER_CUS_COL_4,  
+                        CUS_COL_5 AS CUBE_CUSTOMER_CUS_COL_5,  
+                        CUS_COL_6 AS CUBE_CUSTOMER_CUS_COL_6,  
+                        CUS_COL_7 AS CUBE_CUSTOMER_CUS_COL_7,  
+                        CUS_COL_8 AS CUBE_CUSTOMER_CUS_COL_8,  
+                        CUS_COL_9 AS CUBE_CUSTOMER_CUS_COL_9,  
+                        CUS_COL_10 AS CUBE_CUSTOMER_CUS_COL_10,
+                        CUS_COL_11 AS CUBE_CUSTOMER_CUS_COL_11,   
+                        CUS_COL_12 AS CUBE_CUSTOMER_CUS_COL_12,  
+                        CUS_COL_13 AS CUBE_CUSTOMER_CUS_COL_13,  
+                        CUS_COL_14 AS CUBE_CUSTOMER_CUS_COL_14,  
+                        CUS_COL_15 AS CUBE_CUSTOMER_CUS_COL_15,  
+                        CUS_COL_16 AS CUBE_CUSTOMER_CUS_COL_16,  
+                        CUS_COL_17 AS CUBE_CUSTOMER_CUS_COL_17,  
+                        CUS_COL_18 AS CUBE_CUSTOMER_CUS_COL_18,  
+                        CUS_COL_19 AS CUBE_CUSTOMER_CUS_COL_19,  
+                        CUS_COL_20 AS CUBE_CUSTOMER_CUS_COL_20 
+                    FROM VIEW_CUBE_CUSTOMER 
+                    WHERE 1=1 
+                    <isNotEmpty property="criteria.tenantsId" prepend="AND">
+                        TENANTS_ID = #criteria.tenantsId#
+                    </isNotEmpty>
+                    <isNotEmpty property="criteria.organizerId" prepend="AND">
+                        ORGANIZER_ID = #criteria.organizerId# 
+                    </isNotEmpty>
+                    <isNotEmpty property="criteria.cubeCustomerWhere" prepend="">
+                        $criteria.cubeCustomerWhere$
+                    </isNotEmpty>
+                ) CC ON CAR.TENANTS_ID=CC.TENANTS_ID AND CAR.ORGANIZER_ID=CC.ORGANIZER_ID AND CAR.CONTACTID=CC.CONTACTID
+                INNER JOIN (
+                    select * from CUBE_INSURE_CAR_EXT where 1 = 1
+	                <isNotEmpty property="criteria.tenantsId" prepend="AND">
+                        TENANTS_ID = #criteria.tenantsId#
+                    </isNotEmpty>
+                    <isNotEmpty property="criteria.organizerId" prepend="AND">
+                        ORGANIZER_ID = #criteria.organizerId#
+                    </isNotEmpty>
+                    <isNotEmpty property="criteria.cubeInsureCarExtWhere" prepend="">
+                        $criteria.cubeInsureCarExtWhere$
+                    </isNotEmpty>
+                ) EXT ON EXT.TENANTS_ID=CAR.TENANTS_ID AND EXT.ORGANIZER_ID=CAR.ORGANIZER_ID AND EXT.CAR_ID=CAR.CAR_ID
+                WHERE 1 = 1
+                <isNotEmpty property="criteria.cubeCustomerExtWhere" prepend="">
+                    $criteria.cubeCustomerExtWhere$
+                </isNotEmpty>
+                <isNotEmpty property="criteria.fuzzyKeySearch" prepend="AND">
+					$criteria.fuzzyKeySearch$
+				</isNotEmpty>
+               
+            )A
+        )B 
+    </select>
+    
+    <!-- 根据车ID查询车辆信息 -->
+    <select id="getCarById" resultClass="HashMap">
+        SELECT
+			CAR.CAR_ID,
+			CAR_NUMBER,
+			CAR_FRAME_NUMBER,
+			CAR_ENGINE_NUMBER,
+			CAR_BRAND,
+			CAR_BRAND_SERIES,
+			CAR_BRAND_TYPE,
+			SHOP_NAME,
+            SALE_ADVISER,
+            CONVERT(VARCHAR,CAR.BUY_CAR_TIME,20) BUY_CAR_TIME,
+			CONTACTID,
+            CONVERT(VARCHAR,CAR.CREATE_DATE,20) CREATE_DATE,
+            CAR.CREATE_ID,
+            CAR.CREATE_NAME,
+            CONVERT(VARCHAR,CAR.MODIFY_DATE,20) MODIFY_DATE,
+            CAR.MODIFY_ID,
+            CAR.MODIFY_NAME,
+			CAR.TENANTS_ID,
+			CAR.ORGANIZER_ID,
+			CUS_COL_1,
+			CUS_COL_2,
+			CUS_COL_3,
+			CUS_COL_4,
+			CUS_COL_5,
+			CUS_COL_6,
+			CUS_COL_7,
+			CUS_COL_8,
+			CUS_COL_9,
+			CUS_COL_10
+		FROM CUBE_INSURE_CAR CAR
+		INNER JOIN CUBE_INSURE_CAR_EXT EXT ON CAR.CAR_ID = EXT.CAR_ID
+		WHERE 1 = 1
+		<isNotEmpty property="criteria.tenantsId" prepend="AND">
+		    CAR.TENANTS_ID = #criteria.tenantsId#
+		</isNotEmpty>
+		<isNotEmpty property="criteria.organizerId" prepend="AND">
+		    CAR.ORGANIZER_ID = #criteria.organizerId#
+		</isNotEmpty>
+		<isNotEmpty property="criteria.carId" prepend="AND">
+		    CAR.CAR_ID = #criteria.carId#
+		</isNotEmpty>
+    </select>
+    
+</sqlMap>
